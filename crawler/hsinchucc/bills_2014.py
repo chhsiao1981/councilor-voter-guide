@@ -27,36 +27,32 @@ class Spider(scrapy.Spider):
 
     def parse(self, response):
         for node in response.xpath('//table/tr/td/table[2]/tr'):
-            print 'node:', node
             the_cls = node.xpath('@class').extract_first()
-            print "the_cls:", the_cls
             if the_cls != '13-grey':
                 continue
+
             tds = node.xpath('td')
             tds = [td for td in tds]
             if len(tds) < 7:
                 continue
 
             the_date = tds[1].xpath('text()').extract_first()
-            print 'the_date:', the_date
             if the_date == u'日期':
                 continue
 
             category = tds[2].xpath('text()').extract_first()
-            print 'category:', category[:2]
 
             abstract = unicode.strip(tds[3].xpath('text()').extract_first())
-            print 'abstract:', abstract
+
             proposed_by = tds[4].xpath('text()').extract_first().split(u'、')
             proposed_by = map(unicode.strip, proposed_by)
             proposed_by = filter(None, proposed_by)
-            print 'proposed_by:', proposed_by
+
             petitioned_by = tds[5].xpath('text()').extract_first().split(u'、')
             petitioned_by = map(unicode.strip, petitioned_by)
             petitioned_by = filter(None, petitioned_by)
-            print 'petitioned_by:', petitioned_by
+
             link = tds[6].xpath('a/@href').extract_first()
-            print 'link:', link
             link = re.sub(u'^\.\.', 'https://www.hsinchu-cc.gov.tw/', link)
 
             item = {}
